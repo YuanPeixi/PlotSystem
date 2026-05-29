@@ -411,6 +411,418 @@
       ],
       "branches": [],
       "exports": []
+    },
+    "project_291b90ea34": {
+      "id": "project_291b90ea34",
+      "title": "Smoke",
+      "seed_text": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支。",
+      "status": "draft",
+      "created_at": "2026-05-29T05:18:26.259354+00:00",
+      "updated_at": "2026-05-29T05:18:26.259368+00:00",
+      "knowledge_graph": {
+        "nodes": [
+          {
+            "id": "node_affe4c2ffd",
+            "label": "探索者进入其中",
+            "mentions": 1
+          },
+          {
+            "id": "node_065bcce82f",
+            "label": "旧王城遗迹重新开启",
+            "mentions": 1
+          },
+          {
+            "id": "node_65220bbd9a",
+            "label": "机关会改变环境并带来分支",
+            "mentions": 1
+          }
+        ],
+        "edges": [
+          {
+            "id": "edge_71bdd92082",
+            "source": "探索者进入其中",
+            "target": "旧王城遗迹重新开启",
+            "reason": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+          },
+          {
+            "id": "edge_15a987329e",
+            "source": "探索者进入其中",
+            "target": "机关会改变环境并带来分支",
+            "reason": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+          },
+          {
+            "id": "edge_643920b623",
+            "source": "旧王城遗迹重新开启",
+            "target": "机关会改变环境并带来分支",
+            "reason": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+          }
+        ],
+        "chunks": [
+          "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+        ]
+      },
+      "director": {
+        "name": "导演智能体",
+        "goal": "围绕“旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支”推进剧情，并保留后续可分支的关键决策点。"
+      },
+      "atmosphere_agent": {
+        "name": "氛围智能体",
+        "mode": "keyword"
+      },
+      "summary_agent": {
+        "name": "总结智能体",
+        "style": "流畅叙事"
+      },
+      "environment_agent": {
+        "name": "环境智能体",
+        "rules": [
+          "环境变化必须回应角色动作",
+          "每轮记录可回溯状态",
+          "在冲突时提高紧张度"
+        ]
+      },
+      "environment": {
+        "location": "探索者进入其中",
+        "time_of_day": "黄昏",
+        "tension": 1,
+        "state_tags": [
+          "探索"
+        ],
+        "facts": [
+          "初始焦点：探索者进入其中"
+        ]
+      },
+      "characters": [
+        {
+          "id": "char_41d64b3164",
+          "name": "探索者",
+          "role": "主导者",
+          "persona": "探索者是剧情中的主导者，擅长围绕种子文本中的关键关系做出反应。",
+          "goal": "推动局势并逼近真相",
+          "traits": [
+            "主导者",
+            "沉浸式扮演",
+            "关注上下文"
+          ],
+          "long_term_memory": [
+            "初始设定来自种子文本关键词：探索者"
+          ],
+          "short_term_memory": []
+        },
+        {
+          "id": "char_108206f907",
+          "name": "旧王城遗迹",
+          "role": "执行者",
+          "persona": "旧王城遗迹是剧情中的执行者，擅长围绕种子文本中的关键关系做出反应。",
+          "goal": "采取行动并测试环境规则",
+          "traits": [
+            "执行者",
+            "沉浸式扮演",
+            "关注上下文"
+          ],
+          "long_term_memory": [
+            "初始设定来自种子文本关键词：旧王城遗迹"
+          ],
+          "short_term_memory": []
+        },
+        {
+          "id": "char_f17b99abbe",
+          "name": "机关",
+          "role": "记录者",
+          "persona": "机关是剧情中的记录者，擅长围绕种子文本中的关键关系做出反应。",
+          "goal": "观察变化并保留关键线索",
+          "traits": [
+            "记录者",
+            "沉浸式扮演",
+            "关注上下文"
+          ],
+          "long_term_memory": [
+            "初始设定来自种子文本关键词：机关"
+          ],
+          "short_term_memory": []
+        }
+      ],
+      "scenes": [],
+      "snapshots": [
+        {
+          "id": "snapshot_eb27327f56",
+          "project_id": "project_291b90ea34",
+          "label": "初始快照",
+          "created_at": "2026-05-29T05:18:26.259392+00:00",
+          "state": {
+            "environment": {
+              "location": "探索者进入其中",
+              "time_of_day": "黄昏",
+              "tension": 1,
+              "state_tags": [
+                "探索"
+              ],
+              "facts": [
+                "初始焦点：探索者进入其中"
+              ]
+            },
+            "characters": [
+              {
+                "id": "char_41d64b3164",
+                "name": "探索者",
+                "role": "主导者",
+                "persona": "探索者是剧情中的主导者，擅长围绕种子文本中的关键关系做出反应。",
+                "goal": "推动局势并逼近真相",
+                "traits": [
+                  "主导者",
+                  "沉浸式扮演",
+                  "关注上下文"
+                ],
+                "long_term_memory": [
+                  "初始设定来自种子文本关键词：探索者"
+                ],
+                "short_term_memory": []
+              },
+              {
+                "id": "char_108206f907",
+                "name": "旧王城遗迹",
+                "role": "执行者",
+                "persona": "旧王城遗迹是剧情中的执行者，擅长围绕种子文本中的关键关系做出反应。",
+                "goal": "采取行动并测试环境规则",
+                "traits": [
+                  "执行者",
+                  "沉浸式扮演",
+                  "关注上下文"
+                ],
+                "long_term_memory": [
+                  "初始设定来自种子文本关键词：旧王城遗迹"
+                ],
+                "short_term_memory": []
+              },
+              {
+                "id": "char_f17b99abbe",
+                "name": "机关",
+                "role": "记录者",
+                "persona": "机关是剧情中的记录者，擅长围绕种子文本中的关键关系做出反应。",
+                "goal": "观察变化并保留关键线索",
+                "traits": [
+                  "记录者",
+                  "沉浸式扮演",
+                  "关注上下文"
+                ],
+                "long_term_memory": [
+                  "初始设定来自种子文本关键词：机关"
+                ],
+                "short_term_memory": []
+              }
+            ],
+            "scenes": []
+          }
+        }
+      ],
+      "branches": [],
+      "exports": []
+    },
+    "project_756543db3c": {
+      "id": "project_756543db3c",
+      "title": "Smoke",
+      "seed_text": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支。",
+      "status": "draft",
+      "created_at": "2026-05-29T05:18:34.941350+00:00",
+      "updated_at": "2026-05-29T05:18:34.941364+00:00",
+      "knowledge_graph": {
+        "nodes": [
+          {
+            "id": "node_b9b49ba77a",
+            "label": "探索者进入其中",
+            "mentions": 1
+          },
+          {
+            "id": "node_0f10de9135",
+            "label": "旧王城遗迹重新开启",
+            "mentions": 1
+          },
+          {
+            "id": "node_dd4f900024",
+            "label": "机关会改变环境并带来分支",
+            "mentions": 1
+          }
+        ],
+        "edges": [
+          {
+            "id": "edge_8d2c132c5e",
+            "source": "探索者进入其中",
+            "target": "旧王城遗迹重新开启",
+            "reason": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+          },
+          {
+            "id": "edge_ea2822dcd9",
+            "source": "探索者进入其中",
+            "target": "机关会改变环境并带来分支",
+            "reason": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+          },
+          {
+            "id": "edge_136638a625",
+            "source": "旧王城遗迹重新开启",
+            "target": "机关会改变环境并带来分支",
+            "reason": "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+          }
+        ],
+        "chunks": [
+          "旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支"
+        ]
+      },
+      "director": {
+        "name": "导演智能体",
+        "goal": "围绕“旧王城遗迹重新开启，探索者进入其中，机关会改变环境并带来分支”推进剧情，并保留后续可分支的关键决策点。"
+      },
+      "atmosphere_agent": {
+        "name": "氛围智能体",
+        "mode": "keyword"
+      },
+      "summary_agent": {
+        "name": "总结智能体",
+        "style": "流畅叙事"
+      },
+      "environment_agent": {
+        "name": "环境智能体",
+        "rules": [
+          "环境变化必须回应角色动作",
+          "每轮记录可回溯状态",
+          "在冲突时提高紧张度"
+        ]
+      },
+      "environment": {
+        "location": "探索者进入其中",
+        "time_of_day": "黄昏",
+        "tension": 1,
+        "state_tags": [
+          "探索"
+        ],
+        "facts": [
+          "初始焦点：探索者进入其中"
+        ]
+      },
+      "characters": [
+        {
+          "id": "char_8f078ced9f",
+          "name": "探索者",
+          "role": "主导者",
+          "persona": "探索者是剧情中的主导者，擅长围绕种子文本中的关键关系做出反应。",
+          "goal": "推动局势并逼近真相",
+          "traits": [
+            "主导者",
+            "沉浸式扮演",
+            "关注上下文"
+          ],
+          "long_term_memory": [
+            "初始设定来自种子文本关键词：探索者"
+          ],
+          "short_term_memory": []
+        },
+        {
+          "id": "char_9b4be7b589",
+          "name": "旧王城遗迹",
+          "role": "执行者",
+          "persona": "旧王城遗迹是剧情中的执行者，擅长围绕种子文本中的关键关系做出反应。",
+          "goal": "采取行动并测试环境规则",
+          "traits": [
+            "执行者",
+            "沉浸式扮演",
+            "关注上下文"
+          ],
+          "long_term_memory": [
+            "初始设定来自种子文本关键词：旧王城遗迹"
+          ],
+          "short_term_memory": []
+        },
+        {
+          "id": "char_50a5e226be",
+          "name": "机关",
+          "role": "记录者",
+          "persona": "机关是剧情中的记录者，擅长围绕种子文本中的关键关系做出反应。",
+          "goal": "观察变化并保留关键线索",
+          "traits": [
+            "记录者",
+            "沉浸式扮演",
+            "关注上下文"
+          ],
+          "long_term_memory": [
+            "初始设定来自种子文本关键词：机关"
+          ],
+          "short_term_memory": []
+        }
+      ],
+      "scenes": [],
+      "snapshots": [
+        {
+          "id": "snapshot_a0f6bf1680",
+          "project_id": "project_756543db3c",
+          "label": "初始快照",
+          "created_at": "2026-05-29T05:18:34.941390+00:00",
+          "state": {
+            "environment": {
+              "location": "探索者进入其中",
+              "time_of_day": "黄昏",
+              "tension": 1,
+              "state_tags": [
+                "探索"
+              ],
+              "facts": [
+                "初始焦点：探索者进入其中"
+              ]
+            },
+            "characters": [
+              {
+                "id": "char_8f078ced9f",
+                "name": "探索者",
+                "role": "主导者",
+                "persona": "探索者是剧情中的主导者，擅长围绕种子文本中的关键关系做出反应。",
+                "goal": "推动局势并逼近真相",
+                "traits": [
+                  "主导者",
+                  "沉浸式扮演",
+                  "关注上下文"
+                ],
+                "long_term_memory": [
+                  "初始设定来自种子文本关键词：探索者"
+                ],
+                "short_term_memory": []
+              },
+              {
+                "id": "char_9b4be7b589",
+                "name": "旧王城遗迹",
+                "role": "执行者",
+                "persona": "旧王城遗迹是剧情中的执行者，擅长围绕种子文本中的关键关系做出反应。",
+                "goal": "采取行动并测试环境规则",
+                "traits": [
+                  "执行者",
+                  "沉浸式扮演",
+                  "关注上下文"
+                ],
+                "long_term_memory": [
+                  "初始设定来自种子文本关键词：旧王城遗迹"
+                ],
+                "short_term_memory": []
+              },
+              {
+                "id": "char_50a5e226be",
+                "name": "机关",
+                "role": "记录者",
+                "persona": "机关是剧情中的记录者，擅长围绕种子文本中的关键关系做出反应。",
+                "goal": "观察变化并保留关键线索",
+                "traits": [
+                  "记录者",
+                  "沉浸式扮演",
+                  "关注上下文"
+                ],
+                "long_term_memory": [
+                  "初始设定来自种子文本关键词：机关"
+                ],
+                "short_term_memory": []
+              }
+            ],
+            "scenes": []
+          }
+        }
+      ],
+      "branches": [],
+      "exports": []
     }
   },
   "meta": {}
