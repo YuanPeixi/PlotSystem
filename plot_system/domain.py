@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass
 from datetime import datetime, timezone
 import re
+from threading import Lock
 from typing import Any
 from uuid import uuid4
+
+from .llm_runtime import AutoGenCoordinator
 
 STOPWORDS = {
     "the", "and", "for", "with", "that", "this", "from", "into", "then", "when", "will",
@@ -24,6 +26,17 @@ ATMOSPHERE_KEYWORDS = {
     "探索": ("遗迹", "旅途", "地图", "线索", "调查"),
     "奇幻": ("魔法", "龙", "神明", "秘术", "异界"),
 }
+
+_autogen_coordinator: AutoGenCoordinator | None = None
+_autogen_coordinator_lock = Lock()
+
+
+def get_autogen_coordinator() -> AutoGenCoordinator:
+    global _autogen_coordinator
+    with _autogen_coordinator_lock:
+        if _autogen_coordinator is None:
+            _autogen_coordinator = AutoGenCoordinator()
+    return _autogen_coordinator
 
 
 def utc_now() -> str:
@@ -210,9 +223,14 @@ def simulate_scene(project: dict[str, Any], rounds: int = 1) -> dict[str, Any]:
         snapshot = build_snapshot(project, f"{scene['name']} - 回合 {round_index} 前")
         project["snapshots"].append(snapshot)
         turns = []
+        coordinator = get_autogen_coordinator()
         for character in project["characters"]:
-            action = f"{character['name']}依据{character['goal']}，在{project['environment']['location']}主动试探新的信息。"
-            dialogue = f"{character['name']}：我会结合当前线索继续推进，确保这条分支仍然可回溯。"
+            action, dialogue = coordinator.character_turn(
+                project=project,
+                character=character,
+                objective=objective,
+                location=project["environment"]["location"],
+            )
             character["short_term_memory"].append(action)
             turns.append(
                 {
@@ -230,10 +248,12 @@ def simulate_scene(project: dict[str, Any], rounds: int = 1) -> dict[str, Any]:
             "fact": f"环境对本轮互动做出反馈，紧张度提升到 {project['environment']['tension']}。",
         }
         project["environment"]["facts"].append(env_update["fact"])
-        director_decision = {
-            "result": "continue" if round_index < rounds else "advance",
-            "reason": "导演智能体认为当前信息足以保留分支点并继续推进主线。",
-        }
+        director_decision = coordinator.director_decision(
+            project=project,
+            objective=objective,
+            round_index=round_index,
+            rounds=rounds,
+        )
         scene["director_notes"].append(director_decision["reason"])
         scene["rounds"].append(
             {
@@ -275,7 +295,7 @@ def export_summary(project: dict[str, Any], style: str = "网文") -> dict[str, 
         for character in project["characters"]
         if character["long_term_memory"]
     )
-    content = (
+    fallback_content = (
         f"【{style}导出】\n"
         f"作品标题：{project['title']}\n"
         f"导演目标：{project['director']['goal']}\n\n"
@@ -283,6 +303,7 @@ def export_summary(project: dict[str, Any], style: str = "网文") -> dict[str, 
         f"角色长期记忆：\n{memory_text}\n\n"
         f"环境状态：地点={project['environment']['location']}，紧张度={project['environment']['tension']}。"
     )
+    content = get_autogen_coordinator().summary(project=project, style=style, fallback_content=fallback_content)
     export = {"id": make_id("export"), "style": style, "content": content, "created_at": utc_now()}
     project["exports"].append(export)
     project["updated_at"] = utc_now()
