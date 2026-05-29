@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plot System</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #f5f7fb;
+        color: #1f2937;
+      }
+      h1, h2 {
+        margin-top: 0;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      }
+      textarea, input, select, button {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font: inherit;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 12px;
+        border-radius: 8px;
+        min-height: 120px;
+      }
+      ul {
+        padding-left: 18px;
+      }
+      .muted {
+        color: #64748b;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Plot System</h1>
+    <p class="muted">一个可运行的剧情推演 MVP：支持种子文本建模、场景模拟、快照分支、总结导出。</p>
+    <div class="grid">
+      <section class="card">
+        <h2>1. 创建项目</h2>
+        <input id="title" placeholder="项目标题" value="示例剧情" />
+        <textarea id="seed" rows="10">旧王城的地下遗迹重新开启，三名互不信任的探索者为了不同目的进入其中。遗迹中残留着会改变环境的机关与未完成的誓约，任何选择都会带来新的分支结局。</textarea>
+        <button id="createBtn">创建并初始化</button>
+      </section>
+
+      <section class="card">
+        <h2>2. 操作当前项目</h2>
+        <label>项目列表</label>
+        <select id="projectSelect"></select>
+        <label>模拟轮数</label>
+        <input id="rounds" type="number" min="1" max="5" value="2" />
+        <button id="simulateBtn">运行场景模拟</button>
+        <label>分支名称</label>
+        <input id="branchName" value="平行分支" />
+        <button id="branchBtn">从最新快照创建分支</button>
+        <label>导出风格</label>
+        <input id="style" value="网文" />
+        <button id="summaryBtn">导出总结文本</button>
+      </section>
+
+      <section class="card">
+        <h2>3. 结果展示</h2>
+        <pre id="output">等待操作...</pre>
+      </section>
+    </div>
+
+    <script>
+      const output = document.getElementById('output');
+      const projectSelect = document.getElementById('projectSelect');
+
+      async function request(url, options = {}) {
+        const response = await fetch(url, {
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || '请求失败');
+        }
+        return data;
+      }
+
+      async function refreshProjects(selectedId) {
+        const data = await request('/api/projects');
+        projectSelect.innerHTML = '';
+        data.projects.forEach(project => {
+          const option = document.createElement('option');
+          option.value = project.id;
+          option.textContent = `${project.title} (${project.status})`;
+          projectSelect.appendChild(option);
+        });
+        if (selectedId) {
+          projectSelect.value = selectedId;
+        }
+        if (!projectSelect.value && data.projects[0]) {
+          projectSelect.value = data.projects[0].id;
+        }
+      }
+
+      async function showProject(id) {
+        if (!id) return;
+        const project = await request(`/api/projects/${id}`);
+        output.textContent = JSON.stringify(project, null, 2);
+      }
+
+      document.getElementById('createBtn').onclick = async () => {
+        const project = await request('/api/projects', {
+          method: 'POST',
+          body: JSON.stringify({
+            title: document.getElementById('title').value,
+            seed_text: document.getElementById('seed').value,
+          }),
+        });
+        await refreshProjects(project.id);
+        output.textContent = JSON.stringify(project, null, 2);
+      };
+
+      document.getElementById('simulateBtn').onclick = async () => {
+        const projectId = projectSelect.value;
+        const scene = await request(`/api/projects/${projectId}/simulate`, {
+          method: 'POST',
+          body: JSON.stringify({ rounds: Number(document.getElementById('rounds').value) || 1 }),
+        });
+        await showProject(projectId);
+        console.log(scene);
+      };
+
+      document.getElementById('branchBtn').onclick = async () => {
+        const projectId = projectSelect.value;
+        const project = await request(`/api/projects/${projectId}`);
+        const latestSnapshot = project.snapshots[project.snapshots.length - 1];
+        const branch = await request(`/api/projects/${projectId}/branch`, {
+          method: 'POST',
+          body: JSON.stringify({
+            snapshot_id: latestSnapshot.id,
+            branch_name: document.getElementById('branchName').value,
+          }),
+        });
+        await refreshProjects(branch.id);
+        output.textContent = JSON.stringify(branch, null, 2);
+      };
+
+      document.getElementById('summaryBtn').onclick = async () => {
+        const projectId = projectSelect.value;
+        const summary = await request(`/api/projects/${projectId}/summary`, {
+          method: 'POST',
+          body: JSON.stringify({ style: document.getElementById('style').value }),
+        });
+        output.textContent = summary.content;
+      };
+
+      projectSelect.onchange = async () => showProject(projectSelect.value);
+      refreshProjects().then(() => showProject(projectSelect.value)).catch(error => {
+        output.textContent = error.message;
+      });
+    </script>
+  </body>
+</html>
