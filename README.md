@@ -114,7 +114,25 @@ Content-Type: application/json
 }
 ```
 
-## 7. 已实现部分说明
+## 7. LLM / AutoGen / GraphRAG 接入
+现在系统已经支持接入外部 LLM，并通过轻量级的 AutoGen 协调器与 GraphRAG 上下文检索来管理角色智能体、导演智能体和总结智能体。
+
+- **AutoGen 协调器**：统一调度角色行动生成、导演决策和总结输出。
+- **GraphRAG 上下文**：从知识图谱节点、文本分块、角色记忆和近期场景中检索上下文再喂给智能体。
+- **安全回退**：未配置 LLM 时自动回退到本地规则逻辑，保证系统仍可离线运行。
+
+### 配置方式（OpenAI 兼容接口）
+在启动前设置以下环境变量：
+
+```bash
+export PLOT_SYSTEM_LLM_BASE_URL="https://your-llm-endpoint/v1"
+export PLOT_SYSTEM_LLM_API_KEY="your_api_key"
+export PLOT_SYSTEM_LLM_MODEL="gpt-4o-mini"
+```
+
+不设置上述变量时，系统仍按原有 MVP 本地逻辑运行。
+
+## 8. 已实现部分说明
 已完成并可运行的部分：
 
 - 基于 README 需求的**完整本地可运行骨架**。
