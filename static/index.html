@@ -184,7 +184,7 @@
 
       projectSelect.onchange = async () => showProject(projectSelect.value);
       refreshProjects().then(() => showProject(projectSelect.value)).catch(error => {
-        output.textContent = error.message;
+        output.textContent = `Failed to load projects: ${error.message}`;
       });
     </script>
   </body>

@@ -14,6 +14,9 @@ STOPWORDS = {
     "智能体", "场景", "剧情", "角色", "环境", "系统", "文本", "用户", "之后", "允许",
 }
 
+MAX_EDGE_REASON_LENGTH = 60
+CHARACTER_SPLIT_PATTERN = r"(?:进入|开启|改变|带来|重新|其中|并且|并|为了|会|使得|导致|推动|相关)"
+
 ATMOSPHERE_KEYWORDS = {
     "紧张": ("危险", "追逐", "危机", "冲突", "秘密", "阴谋", "战争"),
     "温情": ("家", "守护", "友情", "亲情", "治愈"),
@@ -70,7 +73,7 @@ def build_knowledge_graph(seed_text: str) -> dict[str, Any]:
                         "id": make_id("edge"),
                         "source": source,
                         "target": target,
-                        "reason": sentence[:60],
+                        "reason": sentence[:MAX_EDGE_REASON_LENGTH],
                     })
 
     if not edges and len(terms) >= 2:
@@ -91,7 +94,8 @@ def infer_atmosphere(seed_text: str, objective: str) -> list[str]:
 
 
 def build_characters(seed_text: str, graph: dict[str, Any]) -> list[dict[str, Any]]:
-    seeds = [node["label"] for node in graph["nodes"][:3]]
+    used_names: set[str] = set()
+    seeds = [derive_character_name(node["label"], used_names) for node in graph["nodes"][:3]]
     if len(seeds) < 3:
         seeds.extend(["主角", "同伴", "观察者"][len(seeds) : 3])
 
@@ -116,6 +120,21 @@ def build_characters(seed_text: str, graph: dict[str, Any]) -> list[dict[str, An
             }
         )
     return characters
+
+
+def derive_character_name(term: str, used_names: set[str]) -> str:
+    parts = [part.strip("，、；：,. ") for part in re.split(CHARACTER_SPLIT_PATTERN, term) if part.strip("，、；：,. ")]
+    candidates = sorted(parts or [term], key=lambda item: (abs(len(item) - 3), len(item)))
+    for candidate in candidates:
+        if 2 <= len(candidate) <= 6 and candidate not in used_names:
+            used_names.add(candidate)
+            return candidate
+
+    fallback = (parts[0] if parts else term)[:4] or "角色"
+    if fallback in used_names:
+        fallback = f"{fallback[:3]}{len(used_names) + 1}"
+    used_names.add(fallback)
+    return fallback
 
 
 def create_project_payload(title: str, seed_text: str) -> dict[str, Any]:
