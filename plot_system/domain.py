@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass
 from datetime import datetime, timezone
 import re
+from threading import Lock
 from typing import Any
 from uuid import uuid4
 
@@ -27,7 +27,16 @@ ATMOSPHERE_KEYWORDS = {
     "奇幻": ("魔法", "龙", "神明", "秘术", "异界"),
 }
 
-AUTOGEN_COORDINATOR = AutoGenCoordinator()
+_autogen_coordinator: AutoGenCoordinator | None = None
+_autogen_coordinator_lock = Lock()
+
+
+def get_autogen_coordinator() -> AutoGenCoordinator:
+    global _autogen_coordinator
+    with _autogen_coordinator_lock:
+        if _autogen_coordinator is None:
+            _autogen_coordinator = AutoGenCoordinator()
+    return _autogen_coordinator
 
 
 def utc_now() -> str:
@@ -214,8 +223,9 @@ def simulate_scene(project: dict[str, Any], rounds: int = 1) -> dict[str, Any]:
         snapshot = build_snapshot(project, f"{scene['name']} - 回合 {round_index} 前")
         project["snapshots"].append(snapshot)
         turns = []
+        coordinator = get_autogen_coordinator()
         for character in project["characters"]:
-            action, dialogue = AUTOGEN_COORDINATOR.character_turn(
+            action, dialogue = coordinator.character_turn(
                 project=project,
                 character=character,
                 objective=objective,
@@ -238,7 +248,7 @@ def simulate_scene(project: dict[str, Any], rounds: int = 1) -> dict[str, Any]:
             "fact": f"环境对本轮互动做出反馈，紧张度提升到 {project['environment']['tension']}。",
         }
         project["environment"]["facts"].append(env_update["fact"])
-        director_decision = AUTOGEN_COORDINATOR.director_decision(
+        director_decision = coordinator.director_decision(
             project=project,
             objective=objective,
             round_index=round_index,
@@ -293,7 +303,7 @@ def export_summary(project: dict[str, Any], style: str = "网文") -> dict[str, 
         f"角色长期记忆：\n{memory_text}\n\n"
         f"环境状态：地点={project['environment']['location']}，紧张度={project['environment']['tension']}。"
     )
-    content = AUTOGEN_COORDINATOR.summary(project=project, style=style, fallback_content=fallback_content)
+    content = get_autogen_coordinator().summary(project=project, style=style, fallback_content=fallback_content)
     export = {"id": make_id("export"), "style": style, "content": content, "created_at": utc_now()}
     project["exports"].append(export)
     project["updated_at"] = utc_now()
